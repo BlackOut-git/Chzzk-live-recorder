@@ -62,7 +62,7 @@ def get_channel_info(streamer):
         return channel_name, liveTitle, liveCategoryValue
     except Exception as e:
         print(f"채널 정보 가져오기 중 오류 발생: {e}")
-        return streamer, "", ""
+        return None
 
 def sanitize_filename(filename):
     return re.sub(r'[\\/*?:"<>|]', "", filename)
@@ -106,8 +106,13 @@ def main():
                     print("chzzk.py 파일이 설치되어 있습니다. 파일 경로: ", chzzk_file_path)
                     streamer = input("스트리머 아이디를 입력하세요: ")
                     while True:
-                        run_streamlink(streamer)
-                        time.sleep(30)
+                        channel_info = get_channel_info(streamer)
+                        if channel_info is None:
+                            print("생방송 정보를 가져오지 못했습니다. 30초 이후에 다시 시도합니다.")
+                            time.sleep(30)
+                            continue
+                        else:
+                            run_streamlink(streamer)
                 else:
                     print("chzzk.py 파일이 없습니다. 다운로드 및 설치를 시작합니다.")
                     download_file("https://github.com/park-onezero/streamlink-plugin-chzzk/blob/main/chzzk.py", chzzk_file_path)
