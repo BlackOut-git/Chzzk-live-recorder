@@ -58,8 +58,9 @@ def get_channel_info(streamer):
         channel_name = response_json['content']['channel']['channelName']
         liveTitle = response_json['content']['liveTitle']
         liveCategoryValue = response_json['content']['liveCategoryValue']
+        status = response_json['content']['status']
 
-        return channel_name, liveTitle, liveCategoryValue
+        return channel_name, liveTitle, liveCategoryValue, status
     except Exception as e:
         print(f"채널 정보 가져오기 중 오류 발생: {e}")
         return None
@@ -69,7 +70,7 @@ def sanitize_filename(filename):
 
 def run_streamlink(streamer, filename_format):
     try:
-        channel_name, liveTitle, liveCategoryValue = get_channel_info(streamer)
+        channel_name, liveTitle, liveCategoryValue, _ = get_channel_info(streamer)
         current_time = datetime.now().strftime("%m%d_%H%M")
         if filename_format == '1':
             filename = f"{current_time}_{liveCategoryValue}_{liveTitle}.ts"
@@ -115,13 +116,12 @@ def main():
                         print("잘못된 입력입니다. 다시 입력해주세요.")
                         filename_format = input("파일 저장 형식을 선택하세요: ")
                     while True:
-                        channel_info = get_channel_info(streamer)
-                        if channel_info is None:
-                            print("생방송 정보를 가져오지 못했습니다. 30초 이후에 다시 시도합니다.")
-                            time.sleep(30)
-                            continue
-                        else:
+                        status = get_channel_info(streamer)[3]
+                        if status == 'OPEN':
                             run_streamlink(streamer, filename_format)
+                        else:
+                            print("방송이 종료되었습니다. 30초 후에 다시 확인합니다.")
+                            time.sleep(30)
                 else:
                     print("chzzk.py 파일이 없습니다. 다운로드 및 설치를 시작합니다.")
                     download_file("https://github.com/park-onezero/streamlink-plugin-chzzk/blob/main/chzzk.py", chzzk_file_path)
