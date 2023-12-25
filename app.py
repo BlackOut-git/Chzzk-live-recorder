@@ -111,6 +111,9 @@ def main():
                     print("1: 현재시간_카테고리_방속제목")
                     print("2: 현재시간_카테고리")
                     filename_format = input("파일 저장 형식을 선택하세요: ")
+                    while filename_format not in ['1', '2']:
+                        print("잘못된 입력입니다. 다시 입력해주세요.")
+                        filename_format = input("파일 저장 형식을 선택하세요: ")
                     while True:
                         channel_info = get_channel_info(streamer)
                         if channel_info is None:
