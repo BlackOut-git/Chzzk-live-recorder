@@ -67,11 +67,14 @@ def get_channel_info(streamer):
 def sanitize_filename(filename):
     return re.sub(r'[\\/*?:"<>|]', "", filename)
 
-def run_streamlink(streamer):
+def run_streamlink(streamer, filename_format):
     try:
         channel_name, liveTitle, liveCategoryValue = get_channel_info(streamer)
         current_time = datetime.now().strftime("%m%d_%H%M")
-        filename = f"{current_time}_{liveCategoryValue}_{liveTitle}.ts"
+        if filename_format == '1':
+            filename = f"{current_time}_{liveCategoryValue}_{liveTitle}.ts"
+        elif filename_format == '2':
+            filename = f"{current_time}_{liveCategoryValue}.ts"
         sanitized_filename = sanitize_filename(filename)
 
         if not os.path.exists(channel_name):
@@ -105,6 +108,9 @@ def main():
                 if is_file_exists(chzzk_file_path):
                     print("chzzk.py 파일이 설치되어 있습니다. 파일 경로: ", chzzk_file_path)
                     streamer = input("스트리머 아이디를 입력하세요: ")
+                    print("1: 현재시간_카테고리_방속제목")
+                    print("2: 현재시간_카테고리")
+                    filename_format = input("파일 저장 형식을 선택하세요: ")
                     while True:
                         channel_info = get_channel_info(streamer)
                         if channel_info is None:
@@ -112,7 +118,7 @@ def main():
                             time.sleep(30)
                             continue
                         else:
-                            run_streamlink(streamer)
+                            run_streamlink(streamer, filename_format)
                 else:
                     print("chzzk.py 파일이 없습니다. 다운로드 및 설치를 시작합니다.")
                     download_file("https://github.com/park-onezero/streamlink-plugin-chzzk/blob/main/chzzk.py", chzzk_file_path)
@@ -120,8 +126,6 @@ def main():
             else:
                 print("streamlink가 설치되지 않았습니다. 설치를 시작합니다.")
                 ensure_package_installed("streamlink")
-                streamlink_version = run_command(["streamlink", "--version"])
-                print("streamlink 버전: ", streamlink_version.decode('utf-8'))
 
         else:
             print("Python이 설치되지 않았습니다. 설치를 시작합니다.")
@@ -130,7 +134,7 @@ def main():
     except Exception as e:
         print(f"오류 발생: {str(e)}")
     finally:
-        input("아무 키나 눌러 종료하세요.")
+        input("엔터키를 눌러 종료하세요.")
 
 if __name__ == "__main__":
     main()
