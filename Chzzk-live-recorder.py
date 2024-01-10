@@ -8,6 +8,7 @@ import tkinter
 from tkinter import messagebox
 import re
 import asyncio
+import sys
 
 def show_popup(message):
     root = tkinter.Tk()
@@ -16,14 +17,14 @@ def show_popup(message):
     root.destroy()
 
 async def run_command(command):
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, universal_newlines=True, errors='ignore')
     last_line = ""
     while True:
         output = process.stdout.readline()
-        if output == b'' and process.poll() is not None:
+        if output == '' and process.poll() is not None:
             break
         if output:
-            last_line = output.strip().decode()
+            last_line = output.strip()
             print(last_line)
     return last_line
 
@@ -74,13 +75,15 @@ def get_channel_info(streamer):
         return None
 
 def get_cookies():
-    cookies_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "cookies.txt")
+    cookies_file_path = os.path.join(os.getcwd(), "cookies.txt")
     if not os.path.isfile(cookies_file_path) or os.path.getsize(cookies_file_path) == 0:
         with open(cookies_file_path, 'w') as f:
             print("cookies.txt 파일이 없거나 비어있습니다. 쿠키 값을 입력해주세요.\n참고:https://github.com/BlackOut-git/Chzzk-live-recorder")
             NID_AUT = input("NID_AUT 쿠키 값을 입력하세요: ")
             NID_SES = input("NID_SES 쿠키 값을 입력하세요: ")
             f.write(f"NID_AUT={NID_AUT}; NID_SES={NID_SES};")
+    else:
+        print(f"cookies.txt 파일 경로: {cookies_file_path}")
     with open(cookies_file_path, 'r') as f:
         return f.read().strip()
 
@@ -116,9 +119,8 @@ async def main():
             if await is_package_installed("streamlink"):
                 streamlink_version = await run_command("streamlink --version")
                 print("streamlink 버전: ", streamlink_version)
-                get_cookies()
 
-                current_script_dir = os.path.dirname(os.path.realpath(__file__))
+                current_script_dir = os.getcwd()
                 plugins_dir = os.path.join(current_script_dir, "plugins")
 
                 if not os.path.exists(plugins_dir):
@@ -128,6 +130,7 @@ async def main():
 
                 if is_file_exists(chzzk_file_path):
                     print("chzzk.py 파일이 설치되어 있습니다. 파일 경로: ", chzzk_file_path)
+                    get_cookies()
                     streamer = input("스트리머 아이디를 입력하세요: ")
                     print("1: 현재시간_카테고리_방속제목")
                     print("2: 현재시간_카테고리")
