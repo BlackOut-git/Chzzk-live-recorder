@@ -59,9 +59,10 @@ def download_file(url, file_path):
 
 def get_channel_info(streamer):
     try:
+        cookies = get_cookies()
         headers = {
-            'Cookie': 'NID_AUT=d3oAOabNESBfo+S+KfE08uY8fcnrKv2pnILAH6TYczERYnJiB44ZrXF4+ohMaRJO; NID_SES=AAABm1PTAAzAsSjSqu29jQ/3MQKlVFI7oLDJtIjfcNpAkSy2hpi5aZ74Kj/LhI9ClyLQjPEmETAhZZmNMwbYSgorGyFJn3IwvdL6iEPD8GbD7ZT7fc/ywkPgdyZyZhCBXLuLmUL0o15YLNOyEf1UvPwWhq147dP5JXs6J1dDiD6ohmoKoZEn3dlpvx7jkgSb0Mvp/tayd7md6pPCaKIghW6FusI7m/WlprXDo7oBHGLAabukfQKa/t+9V4bUa5E1vp9NkY8dufuXc0ObDsC9ZK52DEGpOCrWAawoZdq56peYmaquqI4mxTl2VVbySjveA70DdX7nKsyz31SNHhYkdON4py53WNX5o2NtT0L2a4oz4ENvP7NDVD5/9mPE/Shkg079cTUEdCqOwM1+BJAFJZb0RWHTkk+qyRki5b681w9iULLY5MVJt9yLkEkv1lBICFTnPCwOMRbJbK62iBWSqaN0uAkBCHihmbxF3pbsgNf4eqVldEFeixZdIkc1bmrJ8YI+Q5aRhy+BIlu6L9qvZaoQ+2WPNJj2Oca6Dvc8Ok94C4fB',
-            }
+            'Cookie': cookies,
+        }
         response = requests.get(f"https://api.chzzk.naver.com/service/v1/channels/{streamer}/live-detail", headers=headers)
         response_json = response.json()
         channel_name = response_json['content']['channel']['channelName']
