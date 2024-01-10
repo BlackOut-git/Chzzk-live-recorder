@@ -17,7 +17,7 @@ def show_popup(message):
     root.destroy()
 
 async def run_command(command):
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, universal_newlines=True, errors='ignore')
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, universal_newlines=True, errors='ignore', encoding='utf-8')
     last_line = ""
     while True:
         output = process.stdout.readline()
