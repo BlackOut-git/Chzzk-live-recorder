@@ -8,3 +8,8 @@ Python, Streamlink 그리고 Streamlink Plugin Chzzk.py를 이용한 자동 녹�
 채널 ID를 입력받아 방송이 켜져있는지 30초마다 확인하여 자동으로 녹화를 진행합니다  
 
 채널 ID에는 URL의 a74f103809ed746b0d867b114ceb33ab와 같은 고유 ID를 입력해야됩니다 
+
+## 쿠키값 확인 방법
+1. 네이버 치지직에 로그인합니다 https://chzzk.naver.com/
+2. F12 -> 상단 Application -> 좌측 Cookies -> NID_AUT , NID_SES 두개의 값이 필요합니다
+![쿠키](https://github.com/BlackOut-git/Chzzk-live-recorder/assets/94197378/461e7d80-4391-4353-a27a-708b0b199205)
