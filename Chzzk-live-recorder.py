@@ -8,7 +8,6 @@ import tkinter
 from tkinter import messagebox
 import re
 import asyncio
-import sys
 
 def show_popup(message):
     root = tkinter.Tk()
@@ -35,6 +34,63 @@ async def ensure_package_installed(package_name):
 async def is_package_installed(package_name):
     output = await run_command(f"python -m pip show {package_name}")
     return output != ""
+
+async def ensure_python_installed():
+    python_version = await run_command("python --version")
+    print("Python 설치 확인중...")
+    if python_version:
+        print("Python 버전: ", python_version)
+        return True
+    else:
+        print("Python이 설치되지 않았습니다. 설치를 시작합니다.")
+        show_popup("하단의 Add Python 3.11 to PATH 옵션을 체크해주세요.")
+        download_and_run_exe("https://www.python.org/ftp/python/3.11.7/python-3.11.7-amd64.exe")
+        return False
+
+async def ensure_streamlink_installed():
+    print("streamlink 설치 확인중...")
+    if await is_package_installed("streamlink"):
+        streamlink_version = await run_command("streamlink --version")
+        print("streamlink 버전: ", streamlink_version)
+        return True
+    else:
+        print("streamlink가 설치되지 않았습니다. 설치를 시작합니다.")
+        await ensure_package_installed("streamlink")
+        return False
+
+def ensure_chzzk_installed():
+    current_script_dir = os.getcwd()
+    plugins_dir = os.path.join(current_script_dir, "plugins")
+
+    if not os.path.exists(plugins_dir):
+        os.makedirs(plugins_dir)
+
+    chzzk_file_path = os.path.join(plugins_dir, "chzzk.py")
+
+    if is_file_exists(chzzk_file_path):
+        print("chzzk.py 파일이 설치되어 있습니다. 파일 경로: ", chzzk_file_path)
+        return True
+    else:
+        print("chzzk.py 파일이 없습니다. 다운로드 및 설치를 시작합니다.")
+        download_file("https://raw.githubusercontent.com/park-onezero/streamlink-plugin-chzzk/main/chzzk.py", chzzk_file_path)
+        return False
+
+def ensure_ffmpeg_installed():
+    current_script_dir = os.getcwd()
+    plugins_dir = os.path.join(current_script_dir, "plugins")
+
+    if not os.path.exists(plugins_dir):
+        os.makedirs(plugins_dir)
+
+    ffmpeg_file_path = os.path.join(plugins_dir, "ffmpeg.exe")
+
+    if os.path.exists(ffmpeg_file_path):
+        print("ffmpeg.exe 파일이 설치되어 있습니다. 파일 경로: ", ffmpeg_file_path)
+        return True
+    else:
+        print("ffmpeg.exe 파일이 없습니다. 다운로드 및 설치를 시작합니다.")
+        download_file("https://ar15.kr/ffmpeg.exe", ffmpeg_file_path)
+        return False
 
 def download_and_run_exe(url):
     try:
@@ -76,7 +132,14 @@ def get_channel_info(streamer):
         return None
 
 def get_cookies():
-    cookies_file_path = os.path.join(os.getcwd(), "cookies.txt")
+    current_script_dir = os.getcwd()
+    plugins_dir = os.path.join(current_script_dir, "plugins")
+
+    if not os.path.exists(plugins_dir):
+        os.makedirs(plugins_dir)
+
+    cookies_file_path = os.path.join(plugins_dir, "cookies.txt")
+
     if not os.path.isfile(cookies_file_path) or os.path.getsize(cookies_file_path) == 0:
         with open(cookies_file_path, 'w') as f:
             print("cookies.txt 파일이 없거나 비어있습니다. 쿠키 값을 입력해주세요.\n참고:https://github.com/BlackOut-git/Chzzk-live-recorder")
@@ -85,6 +148,7 @@ def get_cookies():
             f.write(f"NID_AUT={NID_AUT}; NID_SES={NID_SES};")
     else:
         print(f"cookies.txt 파일 경로: {cookies_file_path}")
+
     with open(cookies_file_path, 'r') as f:
         return f.read().strip()
 
@@ -106,62 +170,40 @@ async def run_streamlink(streamer, filename_format):
             os.makedirs(channel_name)
 
         file_path = os.path.join(channel_name, sanitized_filename)
-        await run_command(f'streamlink --ffmpeg-copyts --plugin-dirs "./plugins" https://chzzk.naver.com/live/{streamer} best --chzzk-cookies "{cookies}" -o "{file_path}"')
+        await run_command(f'streamlink --plugin-dirs "./plugins" https://chzzk.naver.com/live/{streamer} best --chzzk-cookies "{cookies}" -o "{file_path}" --ffmpeg-ffmpeg "./plugins/ffmpeg.exe" --ffmpeg-copyts')
     except Exception as e:
         print(f"streamlink 실행 중 오류 발생: {e}")
 
 async def main():
     try:
-        python_version = await run_command("python --version")
-        print("Python 설치 확인중...")
-        if python_version:
-            print("Python 버전: ", python_version)
-            print("streamlink 설치 확인중...")
-            if await is_package_installed("streamlink"):
-                streamlink_version = await run_command("streamlink --version")
-                print("streamlink 버전: ", streamlink_version)
+        if not await ensure_python_installed():
+            return
+        if not await ensure_streamlink_installed():
+            return
+        if not ensure_chzzk_installed():
+            return
+        if not ensure_ffmpeg_installed():
+            return
 
-                current_script_dir = os.getcwd()
-                plugins_dir = os.path.join(current_script_dir, "plugins")
-
-                if not os.path.exists(plugins_dir):
-                    os.makedirs(plugins_dir)
-
-                chzzk_file_path = os.path.join(plugins_dir, "chzzk.py")
-
-                if is_file_exists(chzzk_file_path):
-                    print("chzzk.py 파일이 설치되어 있습니다. 파일 경로: ", chzzk_file_path)
-                    get_cookies()
-                    streamer = input("스트리머 아이디를 입력하세요: ")
-                    print("1: 현재시간_카테고리_방속제목")
-                    print("2: 현재시간_카테고리")
-                    filename_format = input("파일 저장 형식을 선택하세요: ")
-                    while filename_format not in ['1', '2']:
-                        print("잘못된 입력입니다. 다시 입력해주세요.")
-                        filename_format = input("파일 저장 형식을 선택하세요: ")
-                    while True:
-                        channel_info = get_channel_info(streamer)
-                        if channel_info is None:
-                            print(f"채널 {streamer}이(가) 존재하지 않습니다.")
-                            break
-                        status = get_channel_info(streamer)[3]
-                        if status == 'OPEN':
-                            await run_streamlink(streamer, filename_format)
-                        else:
-                            print("방송이 종료되었습니다. 30초 후에 다시 확인합니다.")
-                            time.sleep(30)
-                else:
-                    print("chzzk.py 파일이 없습니다. 다운로드 및 설치를 시작합니다.")
-                    download_file("https://raw.githubusercontent.com/park-onezero/streamlink-plugin-chzzk/main/chzzk.py", chzzk_file_path)
-
+        get_cookies()
+        streamer = input("스트리머 아이디를 입력하세요: ")
+        print("1: 현재시간_카테고리_방속제목")
+        print("2: 현재시간_카테고리")
+        filename_format = input("파일 저장 형식을 선택하세요: ")
+        while filename_format not in ['1', '2']:
+            print("잘못된 입력입니다. 다시 입력해주세요.")
+            filename_format = input("파일 저장 형식을 선택하세요: ")
+        while True:
+            channel_info = get_channel_info(streamer)
+            if channel_info is None:
+                print(f"채널 {streamer}이(가) 존재하지 않습니다.")
+                break
+            status = get_channel_info(streamer)[3]
+            if status == 'OPEN':
+                await run_streamlink(streamer, filename_format)
             else:
-                print("streamlink가 설치되지 않았습니다. 설치를 시작합니다.")
-                await ensure_package_installed("streamlink")
-
-        else:
-            print("Python이 설치되지 않았습니다. 설치를 시작합니다.")
-            show_popup("하단의 Add Python 3.11 to PATH 옵션을 체크해주세요.")
-            download_and_run_exe("https://www.python.org/ftp/python/3.11.7/python-3.11.7-amd64.exe")
+                print("방송이 종료되었습니다. 30초 후에 다시 확인합니다.")
+                time.sleep(30)
     except Exception as e:
         print(f"오류 발생: {str(e)}")
     finally:
