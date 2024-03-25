@@ -62,6 +62,7 @@ def get_channel_info(streamer):
         cookies = get_cookies()
         headers = {
             'Cookie': cookies,
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
         }
         response = requests.get(f"https://api.chzzk.naver.com/service/v1/channels/{streamer}/live-detail", headers=headers)
         response_json = response.json()
