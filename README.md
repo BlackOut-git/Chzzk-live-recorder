@@ -6,9 +6,9 @@ Python 설치 필요 https://www.python.org/ftp/python/3.11.7/python-3.11.7-amd6
 
 Python, Streamlink 그리고 Streamlink Plugin Chzzk.py를 이용한 자동 녹화 시스템입니다.  
 실행에 필요한 모든 파일이 설치되어있는지 확인하고 아니라면 설치하는 기능이 포함되어있고  
-채널 ID를 입력받아 방송이 켜져있는지 30초마다 확인하여 자동으로 녹화를 진행합니다  
+채널 ID 또는 채널 이름를 입력받아 방송이 켜져있는지 30초마다 확인하여 자동으로 녹화를 진행합니다  
 
-채널 ID에는 URL의 a74f103809ed746b0d867b114ceb33ab와 같은 고유 ID를 입력해야됩니다 
+채널 ID 또는 채널 이름에는 URL의 a74f103809ed746b0d867b114ceb33ab와 같은 고유 ID 혹은 채널 이름인 `몽실s`를 입력해야됩니다 
 
 ## 쿠키값 확인 방법
 1. 네이버 치지직에 로그인합니다 https://chzzk.naver.com/
