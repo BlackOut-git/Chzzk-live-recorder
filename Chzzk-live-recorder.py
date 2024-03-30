@@ -187,7 +187,7 @@ async def main():
             return
 
         get_cookies()
-        streamer = input("스트리머 아이디를 입력하세요: ")
+        streamer = input("채널 아이디 또는 채널 이름을 입력하세요: ")
         print("1: 현재시간_카테고리_방속제목")
         print("2: 현재시간_카테고리")
         filename_format = input("파일 저장 형식을 선택하세요: ")
@@ -197,9 +197,19 @@ async def main():
         while True:
             channel_info = get_channel_info(streamer)
             if channel_info is None:
-                print(f"채널 {streamer}이(가) 존재하지 않습니다.")
-                break
-            status = get_channel_info(streamer)[3]
+                headers = {
+                    'Cookie': get_cookies(),
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Whale/3.25.232.19 Safari/537.36'
+                }
+                search_response = requests.get(f"https://api.chzzk.naver.com/service/v1/search/channels?keyword={streamer}&size=1", headers=headers)
+                search_json = search_response.json()
+                if search_json['content']['data']:
+                    streamer = search_json['content']['data'][0]['channel']['channelId']
+                    channel_info = get_channel_info(streamer)
+                else:
+                    print(f"채널 {streamer}을 찾을 수 없습니다")
+                    break
+            status = channel_info[3]
             if status == 'OPEN':
                 await run_streamlink(streamer, filename_format)
             else:
