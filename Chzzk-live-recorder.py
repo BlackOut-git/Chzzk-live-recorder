@@ -37,18 +37,6 @@ async def is_package_installed(package_name):
     output = await run_command(f"python -m pip show {package_name}")
     return output != ""
 
-async def ensure_python_installed():
-    python_version = await run_command("python --version")
-    print("Python 설치 확인중...")
-    if python_version:
-        print("Python 버전: ", python_version)
-        return True
-    else:
-        print("Python이 설치되지 않았습니다. 설치를 시작합니다.")
-        show_popup("하단의 Add Python 3.11 to PATH 옵션을 체크해주세요.")
-        download_and_run_exe("https://www.python.org/ftp/python/3.11.7/python-3.11.7-amd64.exe")
-        return False
-
 async def ensure_streamlink_installed():
     print("streamlink 설치 확인중...")
     if await is_package_installed("streamlink"):
@@ -182,8 +170,6 @@ async def run_streamlink(streamer, filename_format):
 
 async def main():
     try:
-        if not await ensure_python_installed():
-            return
         if not await ensure_streamlink_installed():
             return
         if not ensure_chzzk_installed():
