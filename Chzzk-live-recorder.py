@@ -8,6 +8,8 @@ import tkinter
 from tkinter import messagebox
 import re
 import asyncio
+import os
+os.environ["PYTHONIOENCODING"] = "utf-8"
 
 def show_popup(message):
     root = tkinter.Tk()
@@ -118,9 +120,11 @@ def get_channel_info(streamer):
         cookies = get_cookies()
         headers = {
             'Cookie': cookies,
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Whale/3.25.232.19 Safari/537.36'
         }
         response = requests.get(f"https://api.chzzk.naver.com/service/v1/channels/{streamer}/live-detail", headers=headers)
+        if response.status_code == 404:
+            return None
         response_json = response.json()
         channel_name = response_json['content']['channel']['channelName']
         liveTitle = response_json['content']['liveTitle']
@@ -154,6 +158,7 @@ def get_cookies():
         return f.read().strip()
 
 def sanitize_filename(filename):
+    filename = filename.encode('utf-8', 'ignore').decode('utf-8')
     return re.sub(r'[\\/*?:"<>|]', "", filename)
 
 async def run_streamlink(streamer, filename_format):
