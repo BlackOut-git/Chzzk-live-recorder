@@ -2,6 +2,7 @@
 
 # Chzzk Live Recorder
 Main Idea: https://github.com/park-onezero/streamlink-plugin-chzzk
+https://www.python.org/ftp/python/3.11.7/python-3.11.7-amd64.exe 먼저설치해주세요 
 
 Python, Streamlink 그리고 Streamlink Plugin Chzzk.py를 이용한 자동 녹화 시스템입니다.  
 실행에 필요한 모든 파일이 설치되어있는지 확인하고 아니라면 설치하는 기능이 포함되어있고  
