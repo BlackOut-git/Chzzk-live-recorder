@@ -4,7 +4,7 @@
 Main Idea: https://github.com/park-onezero/streamlink-plugin-chzzk  
 Python 설치 필요 https://www.python.org/ftp/python/3.11.7/python-3.11.7-amd64.exe  
 
-Python, Streamlink 그리고 Streamlink Plugin Chzzk.py를 이용한 자동 녹화 시스템입니다.  
+Python, Streamlink, FFmpeg, Streamlink Plugin Chzzk.py를 이용한 자동 녹화 시스템입니다.  
 실행에 필요한 모든 파일이 설치되어있는지 확인하고 아니라면 설치하는 기능이 포함되어있고  
 채널 ID 또는 채널 이름를 입력받아 방송이 켜져있는지 30초마다 확인하여 자동으로 녹화를 진행합니다  
 
