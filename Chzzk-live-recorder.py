@@ -212,7 +212,7 @@ async def main():
                     streamer = search_json['content']['data'][0]['channel']['channelId']
                     channel_info = get_channel_info(streamer)
                 else:
-                    print(f"채널 {streamer}을 찾을 수 없습니다")
+                    print(f"채널 {streamer}을(를) 찾을 수 없습니다")
                     break
             status = channel_info[3]
             if status == 'OPEN':
