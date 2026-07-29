@@ -138,7 +138,7 @@ def get_cookies():
             print("cookies.txt 파일이 없거나 비어있습니다. 쿠키 값을 입력해주세요.\n참고:https://github.com/BlackOut-git/Chzzk-live-recorder")
             NID_AUT = input("NID_AUT 쿠키 값을 입력하세요: ")
             NID_SES = input("NID_SES 쿠키 값을 입력하세요: ")
-            f.write(f"NID_AUT=REDACTED; NID_SES=REDACTED;")
+            f.write(f"NID_AUT={NID_AUT}; NID_SES={NID_SES};")
     else:
         print(f"cookies.txt 파일 경로: {cookies_file_path}")
 
