@@ -2,6 +2,7 @@ import os
 import subprocess
 import requests
 import tempfile
+import zipfile
 from datetime import datetime
 import time
 import tkinter
@@ -79,8 +80,28 @@ def ensure_ffmpeg_installed():
         return True
     else:
         print("ffmpeg.exe 파일이 없습니다. 다운로드 및 설치를 시작합니다.")
-        download_file("https://ar15.kr/ffmpeg.exe", ffmpeg_file_path)
+        download_ffmpeg(ffmpeg_file_path)
         return False
+
+FFMPEG_ZIP_URL = "https://github.com/BtbN/FFmpeg-Builds/releases/latest/download/ffmpeg-master-latest-win64-gpl.zip"
+
+def download_ffmpeg(file_path):
+    """FFmpeg 공식 빌드 배포처의 zip에서 ffmpeg.exe만 꺼내 설치한다."""
+    try:
+        with tempfile.NamedTemporaryFile(suffix=".zip", delete=False) as tmp:
+            response = requests.get(FFMPEG_ZIP_URL, stream=True)
+            response.raise_for_status()
+            for chunk in response.iter_content(chunk_size=1 << 20):
+                tmp.write(chunk)
+            zip_path = tmp.name
+        with zipfile.ZipFile(zip_path) as z:
+            member = next(n for n in z.namelist() if n.endswith("bin/ffmpeg.exe"))
+            with z.open(member) as src, open(file_path, 'wb') as dst:
+                dst.write(src.read())
+        os.remove(zip_path)
+        print("ffmpeg.exe 설치 완료: ", file_path)
+    except Exception as e:
+        print(f"ffmpeg 다운로드 및 설치 중 오류 발생: {e}")
 
 def download_and_run_exe(url):
     try:
