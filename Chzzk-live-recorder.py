@@ -135,7 +135,7 @@ def get_cookies():
 
     if not os.path.isfile(cookies_file_path) or os.path.getsize(cookies_file_path) == 0:
         with open(cookies_file_path, 'w') as f:
-            print("cookies.txt 파일이 없거나 비어있습니다. 쿠키 값을 입력해주세요.\n참고:https://github.com/BlackOut-git/Chzzk-live-recorder")
+            print("cookies.txt 파일이 없거나 비어있습니다. 쿠키 값을 입력해주세요.\n참고:https://github.com/MongsilDev/chzzk-live-recorder")
             NID_AUT = input("NID_AUT 쿠키 값을 입력하세요: ")
             NID_SES = input("NID_SES 쿠키 값을 입력하세요: ")
             f.write(f"NID_AUT={NID_AUT}; NID_SES={NID_SES};")
